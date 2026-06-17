@@ -1,0 +1,273 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      -->
+<title>real_interpolated_example_01</title>
+<meta name="generator" content="MATLAB 25.2">
+<link rel="schema.DC" href="http://purl.org/dc/elements/1.1/">
+<meta name="DC.date" content="2026-06-16">
+<meta name="DC.source" content="real_interpolated_example_01.m">
+<style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; }
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+span.typesection { color:#A0522D }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style>
+</head>
+<body>
+<div class="content">
+<h1>real_interpolated_example_01</h1>
+<!--introduction-->
+<p>Nyquist interpolation of an allpass chirp using an FIR lowpass interpolation filter</p>
+<p>Supplement to the paper "Allpass-Based Chirp Design with Perfect Pulse Compression Property"</p>
+<pre>Ivan Selesnick
+Feb 17, 2025</pre>
+<!--/introduction-->
+<h2>Contents</h2>
+<div>
+<ul>
+<li>
+<a href="#2">Allpass chirp</a>
+</li>
+<li>
+<a href="#3">Interpolated allpass chirp waveform</a>
+</li>
+<li>
+<a href="#4">Plots</a>
+</li>
+</ul>
+</div>
+<pre class="codeinput">clear
+</pre>
+<h2 id="2">Allpass chirp</h2>
+<pre class="codeinput">K = 8;
+tau = 20;
+tau_range = [3.3*K - 8.5, 3.3*K - 5.1];  <span class="comment">% recommended range for tau</span>
+Nf = 512;   <span class="comment">% FFT grid points</span>
+
+[apc, target_funs] = real_allpass_chirp(K, tau, Nf);
+</pre>
+<h2 id="3">Interpolated allpass chirp waveform</h2>
+<p>Interpolation factor M</p>
+<pre class="codeinput">M = 10;             <span class="comment">% interpolation factor</span>
+
+[ic, lpf] = interpolated_allpass_chirp(apc, M);  <span class="comment">% create interpolated allpass chirp</span>
+
+<span class="comment">% lpf is the lowpass interpolation filter</span>
+</pre>
+<h2 id="4">Plots</h2>
+<pre class="codeinput">figure(1)
+clf
+tiledlayout(3, 2 , <span class="string">'Padding'</span>,<span class="string">'compact'</span>, <span class="string">'TileSpacing'</span>,<span class="string">'compact'</span>)
+
+nexttile
+plot(apc.n, apc.h)
+xlim([-2 2]*apc.tau)
+title(<span class="string">'Allpass chirp waveform'</span>)
+xlabel(<span class="string">'Time (index)'</span>)
+ylim([-1 1] * 1.2 * 1/sqrt(apc.tau))
+grid <span class="string">on</span>
+plot_note(apc.Ktau_string);
+
+nexttile
+plot(ic.n , ic.h)
+xlim([-1 1] * 2 * apc.tau * lpf.M)
+title(sprintf(<span class="string">'Interpolated allpass chirp (%dx)'</span>, lpf.M))
+xlabel(<span class="string">'Time (index)'</span>)
+grid <span class="string">on</span>
+
+nexttile
+plot(ic.n, ic.h / ic.scale_factor , <span class="string">'.-'</span>, apc.n * lpf.M, apc.h, <span class="string">'ro'</span>)
+xlim(([-15 0]) * lpf.M)
+title(<span class="string">'Original and interpolated waveforms'</span>)
+xlabel(<span class="string">'Time (index)'</span>)
+ylim([-1 1] * 1.2 * 1/sqrt(apc.tau))
+
+nexttile
+plot(lpf.n , lpf.h )
+title(sprintf(<span class="string">'Impulse response of lowpass %dx-interpolation filter'</span>, lpf.M))
+ylim([-0.25 1.25] / lpf.M)
+xlabel(<span class="string">'Time (index)'</span>)
+grid <span class="string">on</span>
+plot_note(lpf.window_name);
+
+nexttile
+plot(1-ic.N:ic.N-1, ic.xcorr)
+xlim([-1 1] * 2 * lpf.N)
+ylim([-0.3 1.1])
+title(<span class="string">'ACF of interpolated allpass chirp'</span>)
+grid <span class="string">on</span>
+xlabel(<span class="string">'Lag (index)'</span>)
+
+nexttile
+plot(ic.f, 20*log10(abs(ic.H)) )
+xlim([0 0.5])
+ylim([-180 20])
+xlabel(<span class="string">'Frequency (normalized)'</span>)
+title(<span class="string">'Fourier Transform of interpolated allpass chirp'</span>)
+grid
+
+orient <span class="string">landscape</span>
+print <span class="string">-dpdf</span> <span class="string">-fillpage</span> <span class="string">real_interpolated_example_01_fig.pdf</span>
+</pre>
+<img vspace="5" hspace="5" src="real_interpolated_example_01_01.png" alt=""> <p class="footer">
+<br>
+<a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2025b</a>
+<br>
+</p>
+</div>
+<!--
+##### SOURCE BEGIN #####
+%% real_interpolated_example_01
+% Nyquist interpolation of an allpass chirp
+% using an FIR lowpass interpolation filter
+%
+% Supplement to the paper
+% "Allpass-Based Chirp Design with Perfect Pulse Compression Property"
+%
+%  Ivan Selesnick
+%  Feb 17, 2025
+
+%%
+
+clear
+
+%% Allpass chirp 
+
+K = 8;
+tau = 20;
+tau_range = [3.3*K - 8.5, 3.3*K - 5.1];  % recommended range for tau
+Nf = 512;   % FFT grid points
+
+[apc, target_funs] = real_allpass_chirp(K, tau, Nf);
+
+%% Interpolated allpass chirp waveform
+% Interpolation factor M
+
+M = 10;             % interpolation factor
+
+[ic, lpf] = interpolated_allpass_chirp(apc, M);  % create interpolated allpass chirp
+
+% lpf is the lowpass interpolation filter
+
+       
+%% Plots
+
+figure(1)
+clf
+tiledlayout(3, 2 , 'Padding','compact', 'TileSpacing','compact')
+
+nexttile
+plot(apc.n, apc.h)
+xlim([-2 2]*apc.tau)
+title('Allpass chirp waveform')
+xlabel('Time (index)')
+ylim([-1 1] * 1.2 * 1/sqrt(apc.tau))
+grid on
+plot_note(apc.Ktau_string);
+
+nexttile
+plot(ic.n , ic.h)
+xlim([-1 1] * 2 * apc.tau * lpf.M)
+title(sprintf('Interpolated allpass chirp (%dx)', lpf.M))
+xlabel('Time (index)')
+grid on
+
+nexttile
+plot(ic.n, ic.h / ic.scale_factor , '.-', apc.n * lpf.M, apc.h, 'ro')
+xlim(([-15 0]) * lpf.M)
+title('Original and interpolated waveforms')
+xlabel('Time (index)')
+ylim([-1 1] * 1.2 * 1/sqrt(apc.tau))
+
+nexttile
+plot(lpf.n , lpf.h )
+title(sprintf('Impulse response of lowpass %dx-interpolation filter', lpf.M))
+ylim([-0.25 1.25] / lpf.M)
+xlabel('Time (index)')
+grid on
+plot_note(lpf.window_name);
+
+nexttile
+plot(1-ic.N:ic.N-1, ic.xcorr)
+xlim([-1 1] * 2 * lpf.N)
+ylim([-0.3 1.1])
+title('ACF of interpolated allpass chirp')
+grid on
+xlabel('Lag (index)')
+
+nexttile
+plot(ic.f, 20*log10(abs(ic.H)) )
+xlim([0 0.5])
+ylim([-180 20])
+xlabel('Frequency (normalized)')
+title('Fourier Transform of interpolated allpass chirp')
+grid
+
+orient landscape
+print -dpdf -fillpage real_interpolated_example_01_fig.pdf
+
+##### SOURCE END #####
+-->
+</body>
+</html>

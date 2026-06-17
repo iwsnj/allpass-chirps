@@ -1,0 +1,234 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      -->
+<title>real_cascade_example_01</title>
+<meta name="generator" content="MATLAB 25.2">
+<link rel="schema.DC" href="http://purl.org/dc/elements/1.1/">
+<meta name="DC.date" content="2026-06-16">
+<meta name="DC.source" content="real_cascade_example_01.m">
+<style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; }
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+span.typesection { color:#A0522D }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style>
+</head>
+<body>
+<div class="content">
+<h1>real_cascade_example_01</h1>
+<!--introduction-->
+<p>Cascading allpass chirp multiple times.</p>
+<p>Supplement to the paper "Allpass-Based Chirp Design with Perfect Pulse Compression Property"</p>
+<pre>Ivan Selesnick
+February, 2025 - June, 2026</pre>
+<!--/introduction-->
+<h2>Contents</h2>
+<div>
+<ul>
+<li>
+<a href="#2">All-pass chirp system</a>
+</li>
+<li>
+<a href="#3">Cascade</a>
+</li>
+<li>
+<a href="#4">Plots</a>
+</li>
+</ul>
+</div>
+<pre class="codeinput">clear
+</pre>
+<h2 id="2">All-pass chirp system</h2>
+<pre class="codeinput">K = 8;
+tau = 20;
+tau_range = [3.3*K - 8.5, 3.3*K - 5.1];  <span class="comment">% recommended range for tau</span>
+Nf = 512 ;   <span class="comment">% FFT grid points</span>
+
+[apc, target_funs] = real_allpass_chirp(K, tau, Nf);
+
+<span class="comment">% plot_real_allpass_chirp(apc);</span>
+</pre>
+<h2 id="3">Cascade</h2>
+<pre class="codeinput">L = 5;
+cc = cascaded_allpass_chirp(apc, L);
+</pre>
+<pre class="codeoutput">ans =
+   6.6613e-16
+</pre>
+<h2 id="4">Plots</h2>
+<pre class="codeinput">figure(1)
+clf
+TIL = tiledlayout(3, 1 , <span class="string">'Padding'</span>,<span class="string">'compact'</span>, <span class="string">'TileSpacing'</span>,<span class="string">'compact'</span>);
+
+nexttile
+plot(apc.n, apc.h)
+grid <span class="string">on</span>
+zoom <span class="string">on</span>
+xlim([-1 1] * apc.duration)
+xlabel(<span class="string">'Time (index)'</span>)
+title(<span class="string">'Allpass chirp waveform'</span>)
+ylim([-1 1] * 1.2 * 1/sqrt(apc.duration/2))
+
+nexttile
+plot(cc.n, cc.h)
+grid <span class="string">on</span>
+zoom <span class="string">on</span>
+xlim([-1 1] * apc.duration * L)
+xlabel(<span class="string">'Time (index)'</span>)
+title(sprintf(<span class="string">'Cascaded (%dx) allpass chirp waveform'</span>, L))
+ylim([-1 1] * 1.2 * 1/sqrt(cc.duration/2 ))
+
+<span class="comment">% Verify that the autocorrelation is an impulse</span>
+
+nexttile
+stem(1-cc.N:cc.N-1, cc.xcorr, <span class="string">'.-'</span>)
+zoom <span class="string">on</span>
+grid <span class="string">on</span>
+xlabel(<span class="string">'Lag (index)'</span>)
+title(<span class="string">'ACF of cascaded allpass chirp'</span>)
+xlim([-1 1] * apc.duration)
+ylim([-1 2])
+
+orient <span class="string">tall</span>
+print <span class="string">-dpdf</span> <span class="string">-fillpage</span> <span class="string">real_cascade_example_01_fig</span>
+</pre>
+<img vspace="5" hspace="5" src="real_cascade_example_01_01.png" alt=""> <p class="footer">
+<br>
+<a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2025b</a>
+<br>
+</p>
+</div>
+<!--
+##### SOURCE BEGIN #####
+%% real_cascade_example_01
+% Cascading allpass chirp multiple times.
+%
+% Supplement to the paper
+% "Allpass-Based Chirp Design with Perfect Pulse Compression Property"
+% 
+%  Ivan Selesnick
+%  February, 2025 - June, 2026
+
+%% 
+
+clear
+
+%% All-pass chirp system
+
+K = 8;
+tau = 20;
+tau_range = [3.3*K - 8.5, 3.3*K - 5.1];  % recommended range for tau
+Nf = 512 ;   % FFT grid points
+
+[apc, target_funs] = real_allpass_chirp(K, tau, Nf);
+
+% plot_real_allpass_chirp(apc);
+
+%% Cascade 
+
+L = 5;
+cc = cascaded_allpass_chirp(apc, L);
+
+%% Plots
+
+figure(1)
+clf
+TIL = tiledlayout(3, 1 , 'Padding','compact', 'TileSpacing','compact');
+
+nexttile
+plot(apc.n, apc.h)
+grid on
+zoom on
+xlim([-1 1] * apc.duration)
+xlabel('Time (index)')
+title('Allpass chirp waveform')
+ylim([-1 1] * 1.2 * 1/sqrt(apc.duration/2))
+
+nexttile
+plot(cc.n, cc.h)
+grid on
+zoom on
+xlim([-1 1] * apc.duration * L)
+xlabel('Time (index)')
+title(sprintf('Cascaded (%dx) allpass chirp waveform', L))
+ylim([-1 1] * 1.2 * 1/sqrt(cc.duration/2 ))
+
+% Verify that the autocorrelation is an impulse
+
+nexttile
+stem(1-cc.N:cc.N-1, cc.xcorr, '.-')
+zoom on
+grid on
+xlabel('Lag (index)')
+title('ACF of cascaded allpass chirp')
+xlim([-1 1] * apc.duration)
+ylim([-1 2])
+
+orient tall
+print -dpdf -fillpage real_cascade_example_01_fig
+
+##### SOURCE END #####
+-->
+</body>
+</html>
